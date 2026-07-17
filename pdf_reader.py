@@ -1,4 +1,5 @@
 import PyPDF2
+#converting pdf to text
 
 def read_pdf(file_path):
     try:
@@ -11,7 +12,3 @@ def read_pdf(file_path):
     except Exception as e:
         print(f"An error occurred while reading the PDF: {e}")
         return None
-
-text = read_pdf('Sample_Insurance_Policy_Dummy.pdf')
-print(text)
-
