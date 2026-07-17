@@ -58,11 +58,13 @@ Return the response only in valid JSON format.
     print(json.dumps(json_data, indent=4))
 
 
-    # Step 8: Store all prompt outputs in JSON file
-    file_name = "insurance_output.json"
+    # Step 8: Store all responses in JSON file
+    output_folder = r"C:\Users\makka\OneDrive\Documents\output"
+
+    file_name = os.path.join(output_folder, "insurance_output.json")
 
 
-    # Check if JSON history file already exists
+    # Read existing JSON history
     if os.path.exists(file_name):
 
         with open(file_name, "r") as file:
@@ -81,12 +83,12 @@ Return the response only in valid JSON format.
     )
 
 
-    # Save updated history
+    # Save updated JSON file
     with open(file_name, "w") as file:
         json.dump(history, file, indent=4)
 
 
-    print("\nResponse saved to insurance_output.json")
+    print("\nResponse saved successfully!")
 
 
 if __name__ == "__main__":
