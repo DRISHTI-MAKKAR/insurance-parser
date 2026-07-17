@@ -1,8 +1,8 @@
 import json
-import os
 
 from pdf_reader import read_pdf
 from claude_client import ask_claude
+from json_utils import parse_json_response, save_json
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
     user_prompt = input("\nEnter your prompt: ")
 
 
-    # Step 4: Combine PDF text and user instruction
+    # Step 4: Create final prompt
     final_prompt = f"""
 Here is the insurance document:
 
@@ -34,7 +34,10 @@ Here is the insurance document:
 User instruction:
 {user_prompt}
 
-Return the response only in valid JSON format.
+Rules:
+- Return only valid JSON.
+- If any field is missing, return null.
+- Do not omit fields.
 """
 
 
@@ -42,50 +45,31 @@ Return the response only in valid JSON format.
     response = ask_claude(final_prompt)
 
 
-    # Step 6: Convert Claude response into JSON
-    try:
-        json_data = json.loads(response)
+    # Step 6: Parse Claude JSON response
+    json_data = parse_json_response(response)
 
-    except json.JSONDecodeError:
+
+    if json_data is None:
         print("Claude did not return valid JSON.")
         print("\nClaude Response:")
         print(response)
         return
 
 
-    # Step 7: Display only current prompt output
+    # Step 7: Display current response only
     print("\nClaude Response:")
     print(json.dumps(json_data, indent=4))
 
 
-    # Step 8: Store all responses in JSON file
-    output_folder = r"C:\Users\makka\OneDrive\Documents\output"
-
-    file_name = os.path.join(output_folder, "insurance_output.json")
+    # Step 8: Save response history
+    output_path = r"C:\Users\makka\OneDrive\Documents\output\insurance_output.json"
 
 
-    # Read existing JSON history
-    if os.path.exists(file_name):
-
-        with open(file_name, "r") as file:
-            history = json.load(file)
-
-    else:
-        history = []
-
-
-    # Add current prompt and response
-    history.append(
-        {
-            "prompt": user_prompt,
-            "response": json_data
-        }
+    save_json(
+        json_data,
+        user_prompt,
+        output_path
     )
-
-
-    # Save updated JSON file
-    with open(file_name, "w") as file:
-        json.dump(history, file, indent=4)
 
 
     print("\nResponse saved successfully!")
