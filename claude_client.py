@@ -32,4 +32,8 @@ Rules:
         ]
     )
 
-    return response.content[0].text
+    return {
+        "output": response.content[0].text,
+        "input_tokens": response.usage.input_tokens,
+        "output_tokens": response.usage.output_tokens
+    }
