@@ -10,7 +10,6 @@ def main():
     # Step 1: Get PDF path from user
     pdf_path = input("Enter PDF path: ")
 
-
     # Step 2: Extract text from PDF
     extracted_text = read_pdf(pdf_path)
 
@@ -18,15 +17,25 @@ def main():
         print("Could not extract text from PDF.")
         return
 
+    # Step 3: Get multi-line user prompt
+    print("\nEnter your prompt.")
+    print("Type END on a new line when you are finished:\n")
 
-    # Step 3: Get user prompt
-    user_prompt = input("\nEnter your prompt: ")
+    prompt_lines = []
 
+    while True:
+        line = input()
+
+        if line.strip().upper() == "END":
+            break
+
+        prompt_lines.append(line)
+
+    user_prompt = "\n".join(prompt_lines)
 
     # Step 4: Create final prompt
     final_prompt = f"""
 Here is the insurance document:
-
 --------------------
 {extracted_text}
 --------------------
@@ -40,37 +49,36 @@ Rules:
 - Do not omit fields.
 """
 
-
     # Step 5: Send request to Claude
     response = ask_claude(final_prompt)
 
+    # Display token usage
+    print("\nToken Usage:")
+    print(f"Input Tokens : {response['input_tokens']}")
+    print(f"Output Tokens: {response['output_tokens']}")
+    print(f"Total Tokens : {response['input_tokens'] + response['output_tokens']}")
 
     # Step 6: Parse Claude JSON response
-    json_data = parse_json_response(response)
-
+    json_data = parse_json_response(response["output"])
 
     if json_data is None:
         print("Claude did not return valid JSON.")
         print("\nClaude Response:")
-        print(response)
+        print(response["output"])
         return
-
 
     # Step 7: Display current response only
     print("\nClaude Response:")
     print(json.dumps(json_data, indent=4))
 
-
     # Step 8: Save response history
     output_path = r"C:\Users\makka\OneDrive\Documents\output\insurance_output.json"
-
 
     save_json(
         json_data,
         user_prompt,
         output_path
     )
-
 
     print("\nResponse saved successfully!")
 
