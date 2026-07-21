@@ -46,7 +46,6 @@ def save_json(data, prompt, file_path):
     else:
         history = []
 
-
     history.append(
         {
             "prompt": prompt,
@@ -54,6 +53,23 @@ def save_json(data, prompt, file_path):
         }
     )
 
-
     with open(file_path, "w") as file:
         json.dump(history, file, indent=4)
+
+
+def verify_policy_number(policy_number, source_text):
+    """
+    Verify that the extracted policy number exists exactly
+    as it appears in the original source text.
+
+    Returns:
+        True  -> if verified
+        False -> if not verified
+    """
+
+    # If Claude returned null, verification succeeds.
+    if policy_number is None:
+        return True
+
+    # Check whether the extracted value exists verbatim.
+    return policy_number in source_text
