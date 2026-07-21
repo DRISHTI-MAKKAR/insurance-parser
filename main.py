@@ -2,7 +2,11 @@ import json
 
 from pdf_reader import read_pdf
 from claude_client import ask_claude
-from json_utils import parse_json_response, save_json
+from json_utils import (
+    parse_json_response,
+    save_json,
+    verify_policy_number      # <-- New import
+)
 
 
 def main():
@@ -67,11 +71,25 @@ Rules:
         print(response["output"])
         return
 
-    # Step 7: Display current response only
+    # Step 7: Verify extracted policy number
+    policy_number = json_data.get("policyNumber")
+
+    verified = verify_policy_number(
+        policy_number,
+        extracted_text
+    )
+
+    print("\nVerification:")
+    if verified:
+        print("✓ Policy number verified successfully.")
+    else:
+        print("✗ Verification failed! Extracted value does not exist in the source document.")
+
+    # Step 8: Display Claude response
     print("\nClaude Response:")
     print(json.dumps(json_data, indent=4))
 
-    # Step 8: Save response history
+    # Step 9: Save response history
     output_path = r"C:\Users\makka\OneDrive\Documents\output\insurance_output.json"
 
     save_json(
