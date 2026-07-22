@@ -81,9 +81,9 @@ Rules:
         verified = verify_field(value, extracted_text)
 
         if verified:
-            print(f"✓ {key} verified successfully.")
+            print(f"{key} verified successfully.")
         else:
-            print(f"✗ {key} verification failed! Value not found in the source document.")
+            print(f"{key} verification failed! Value not found in the source document.")
             all_verified = False
 
     if all_verified:
