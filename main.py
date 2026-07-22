@@ -5,7 +5,7 @@ from claude_client import ask_claude
 from json_utils import (
     parse_json_response,
     save_json,
-    verify_policy_number      # <-- New import
+    verify_field
 )
 
 
@@ -71,19 +71,25 @@ Rules:
         print(response["output"])
         return
 
-    # Step 7: Verify extracted policy number
-    policy_number = json_data.get("policyNumber")
-
-    verified = verify_policy_number(
-        policy_number,
-        extracted_text
-    )
-
+    # Step 7: Verify all extracted fields
     print("\nVerification:")
-    if verified:
-        print("✓ Policy number verified successfully.")
+
+    all_verified = True
+
+    for key, value in json_data.items():
+
+        verified = verify_field(value, extracted_text)
+
+        if verified:
+            print(f"✓ {key} verified successfully.")
+        else:
+            print(f"✗ {key} verification failed! Value not found in the source document.")
+            all_verified = False
+
+    if all_verified:
+        print("\nAll fields verified successfully.")
     else:
-        print("✗ Verification failed! Extracted value does not exist in the source document.")
+        print("\nSome fields could not be verified.")
 
     # Step 8: Display Claude response
     print("\nClaude Response:")

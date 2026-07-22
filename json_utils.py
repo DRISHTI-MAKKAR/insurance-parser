@@ -57,10 +57,10 @@ def save_json(data, prompt, file_path):
         json.dump(history, file, indent=4)
 
 
-def verify_policy_number(policy_number, source_text):
+def verify_field(value, source_text):
     """
-    Verify that the extracted policy number exists exactly
-    as it appears in the original source text.
+    Verify that an extracted field exists exactly
+    in the original source text.
 
     Returns:
         True  -> if verified
@@ -68,8 +68,11 @@ def verify_policy_number(policy_number, source_text):
     """
 
     # If Claude returned null, verification succeeds.
-    if policy_number is None:
+    if value is None:
         return True
 
-    # Check whether the extracted value exists verbatim.
-    return policy_number in source_text
+    # Convert non-string values (numbers, etc.) to string.
+    value = str(value)
+
+    # Check whether the extracted value exists in the source text.
+    return value in source_text
